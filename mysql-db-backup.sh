@@ -12,42 +12,40 @@
 # Command:
 # echo -n "your_username:your_password" | openssl aes-256-cbc -salt -out /path/to/encrypted/credentials.txt.enc
 
-
-# Function to start MySQL service if it's not already running
-start_mysql_service() {
-  # Adjust the command based on your MySQL service name
-    systemctl start mysql.service
+# Function to start MariaDB service if it's not already running
+start_mariadb_service() {
+    systemctl start mariadb.service
 }
 
-# Check if MySQL service is running
-if systemctl is-active --quiet mysql.service; then
-    echo "MySQL service is running"
+# Check if MariaDB service is running
+if systemctl is-active --quiet mariadb.service; then
+    echo "MariaDB service is running"
 else
-    echo "MySQL service is not running, starting the service..."
-    start_mysql_service
+    echo "MariaDB service is not running, starting the service..."
+    start_mariadb_service
 
-    # Check if MySQL service started successfully
-    if systemctl is-active --quiet mysql.service; then
-        echo "MySQL service started successfully"
+    # Check if MariaDB service started successfully
+    if systemctl is-active --quiet mariadb.service; then
+        echo "MariaDB service started successfully"
     else
-        echo "Error: Failed to start MySQL service"
+        echo "Error: Failed to start MariaDB service"
         exit 1  # Exit with error code
     fi
 fi
 
 # Path to encrypted credentials file
-ENCRYPTED_CREDENTIALS_FILE="/path/to/encrypted/credentials.txt.enc"
+ENCRYPTED_CREDENTIALS_FILE="/home/ioana/mysql_db_backup/encrypted/credentials.txt.enc"
 
 # Decrypting credentials
 decrypted_credentials=$(openssl aes-256-cbc -d -in $ENCRYPTED_CREDENTIALS_FILE)
 
-# MySQL database credentials
+# MariaDB database credentials
 DB_USER=$(echo $decrypted_credentials | cut -d':' -f1)
 DB_PASS=$(echo $decrypted_credentials | cut -d':' -f2)
 DB_NAME="your_database_name"
 
 # Backup directory
-BACKUP_DIR="/path/to/backup/directory"
+BACKUP_DIR="/home/ioana/mysql_db_backup"
 
 # Maximum number of retries
 MAX_RETRIES=3
@@ -58,9 +56,9 @@ TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 # Backup filename
 BACKUP_FILE="$BACKUP_DIR/$DB_NAME-$TIMESTAMP.sql"
 
-# Function to perform MySQL backup
+# Function to perform MariaDB backup
 perform_backup() {
-    # Command to backup MySQL database
+    # Command to backup MariaDB database
     mysqldump -u $DB_USER -p$DB_PASS $DB_NAME > $BACKUP_FILE
 }
 
@@ -100,3 +98,5 @@ if [ ! -s $BACKUP_FILE ]; then
 fi
 
 echo "Backup process completed successfully."
+
+
