@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Scheduling a script to run on a specific period of time
+# Command: crontab -e
+# Add the following line at the end of the file: 0 18 * * 0 /path/to/your/script/backup_mysql.sh
+# The above scheduling means that this 'cron' will execute the script every Sunday at 6 PM.
+#   - '0' represents the minute (0 minutes past the hour).
+#   - '18' represents the hour (6 PM in 24-hour format).
+#   - '* * 0' represents any day of the month, any month, and 0 represents Sunday.
+
+# Before running this script we want the DB credentials, username and password, to be encrypted:
+# Command:
+# echo -n "your_username:your_password" | openssl aes-256-cbc -salt -out /path/to/encrypted/credentials.txt.enc
+
+
 # Function to start MySQL service if it's not already running
 start_mysql_service() {
   # Adjust the command based on your MySQL service name
