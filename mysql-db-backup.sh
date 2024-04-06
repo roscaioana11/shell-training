@@ -34,7 +34,7 @@ else
 fi
 
 # Path to encrypted credentials file
-ENCRYPTED_CREDENTIALS_FILE="/home/ioana/mysql_db_backup/encrypted/credentials.txt.enc"
+ENCRYPTED_CREDENTIALS_FILE="/path/to/encrypted/credentials.txt.enc"
 
 # Decrypting credentials
 decrypted_credentials=$(openssl aes-256-cbc -d -in $ENCRYPTED_CREDENTIALS_FILE)
@@ -45,7 +45,12 @@ DB_PASS=$(echo $decrypted_credentials | cut -d':' -f2)
 DB_NAME="your_database_name"
 
 # Backup directory
-BACKUP_DIR="/home/ioana/mysql_db_backup"
+BACKUP_DIR="/path/to/backup/directory"
+
+# Check if backup directory exists, otherwise it will create it
+if [ ! -f $BACKUP_DIR ]; then
+    sudo mkdir -p $BACKUP_DIR
+fi
 
 # Maximum number of retries
 MAX_RETRIES=3
@@ -59,7 +64,10 @@ BACKUP_FILE="$BACKUP_DIR/$DB_NAME-$TIMESTAMP.sql"
 # Function to perform MariaDB backup
 perform_backup() {
     # Command to backup MariaDB database
-    mysqldump -u $DB_USER -p$DB_PASS $DB_NAME > $BACKUP_FILE
+    echo $DB_NAME
+    echo $DB_USER
+    echo $DB_PASS
+    sudo mysqldump -u $DB_USER -p$DB_PASS $DB_NAME > $BACKUP_FILE
 }
 
 # Attempt backup with retries
@@ -98,5 +106,3 @@ if [ ! -s $BACKUP_FILE ]; then
 fi
 
 echo "Backup process completed successfully."
-
-
